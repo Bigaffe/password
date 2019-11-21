@@ -1,11 +1,17 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const secret = require("./secret");
+
+
 const app = express();
 
 app.use(express.urlencoded({extended:false}));
+app.use(cookieParser());
 
 app.get("/",function(req,res){
-    res.send("index route...");
+    res.send(req.cookies);
 });
 
 app.get("/login",function(req,res){
@@ -14,37 +20,39 @@ app.get("/login",function(req,res){
 
 app.post("/login",function(req,res){
 
-    //Hämta våra användare från db/fil
+    // Hämta våra användare från db/fil
     const users = require("./users");
 
     const user = users.filter(function(u){
         return req.body.email === u.email
     });
 
-    //Om vi har en och exakt en användare med rätt email
-    if(user.length===1)
-    {
-        //Kolla lösenord
+    // Om vi har en och exakt en användare med rätt email
+   if(user.length===1)
+   {
+
+        // kolla lösenord
         bcrypt.compare(req.body.password,user[0].password,function(err,success){
 
             if(success){
-                res.send("Login Success!!!!!");
+                
+               // res.cookie("auth",true,{httpOnly:true,sameSite:"strict"});
+               
+               const token = jwt.sign({email:user[0].email},secret,{expiresIn:60});
+               res.cookie("token",token,{httpOnly:true,sameSite:"strict"}); 
+               res.send("Login Success!!!!!!!");
             }
-            else
-            {
-                res.send("Wrong password");
+            else{
+                res.send("Wrong Password");
             }
 
 
         })
-
-
-
-    }
-    else 
-    {
+   }
+   else
+   {
         res.send("no such user");
-    }
+   }
 
     /**
      * 1. hämta data som klienten skickat ( Repetition )
@@ -60,6 +68,8 @@ app.post("/login",function(req,res){
      *    Här skall vi nu använda våra JWT för att hålla en användare inloggad. 
      * 9. Småfix för att förbättra säkerhet och fixa utloggning. 
      */
+
+  
 
 });
 
