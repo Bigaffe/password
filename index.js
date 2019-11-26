@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const secret = require("./secret");
+const auth = require("./auth");
 
 
 const app = express();
@@ -13,6 +14,22 @@ app.use(cookieParser());
 app.get("/",function(req,res){
     res.send(req.cookies);
 });
+
+app.get("/secret",auth,function(req,res){
+    res.send(req.cookies);
+});
+
+app.get("/logout",function(req,res){
+    res.cookie("token","snart är det jul");
+    res.redirect("secret");
+
+
+})
+
+
+
+
+
 
 app.get("/login",function(req,res){
     res.sendFile(__dirname+"/loginform.html");
