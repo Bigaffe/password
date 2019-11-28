@@ -1,0 +1,7 @@
+npm install
+
+git push
+
+cd desktop
+
+

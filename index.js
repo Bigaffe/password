@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const secret = require("./secret");
 const auth = require("./auth");
 
-
 const app = express();
 
 app.use(express.urlencoded({extended:false}));
@@ -23,13 +22,7 @@ app.get("/logout",function(req,res){
     res.cookie("token","snart är det jul");
     res.redirect("secret");
 
-
 })
-
-
-
-
-
 
 app.get("/login",function(req,res){
     res.sendFile(__dirname+"/loginform.html");
@@ -63,12 +56,11 @@ app.post("/login",function(req,res){
                 res.send("Wrong Password");
             }
 
-
         })
    }
    else
    {
-        res.send("no such user");
+        res.send("No such user");
    }
 
     /**
